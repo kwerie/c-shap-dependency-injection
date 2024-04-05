@@ -1,0 +1,9 @@
+.idea/
+bin/
+obj/
+.exe
+.suo
+.user
+.dll
+.vs
+
