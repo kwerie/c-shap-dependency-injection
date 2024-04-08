@@ -9,6 +9,7 @@ using var host = Host.CreateDefaultBuilder(args)
     {
         services.AddTransient<Configuration>();
 
+        services.AddSingleton<IImportStatistics, ImportStatistics>();
         services.AddTransient<IPriceParser, PriceParser>();
         services.AddTransient<IProductSource, ProductSource>();
 

@@ -22,6 +22,11 @@ using var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IImportStatistics, ImportStatistics>();
 
         // Do work here
+        services.AddScoped<IProductTransformationContext, ProductTransformationContext>();
+        services.AddScoped<INameDecapitaliser, NameDecapitaliser>();
+        services.AddScoped<ICurrencyNormalizer, CurrencyNormalizer>();
+
+        services.AddTransient<IProductTransformer, ProductTransformer>();
     })
     .Build();
 
