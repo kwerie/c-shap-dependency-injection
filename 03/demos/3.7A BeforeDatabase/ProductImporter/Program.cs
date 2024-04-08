@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.ComponentModel.Design.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProductImporter.Shared;
 using ProductImporter.Source;
@@ -9,15 +10,24 @@ using ProductImporter.Transformation.Transformations;
 using ProductImporter.Util;
 using Microsoft.EntityFrameworkCore;
 
+var TransientDependencies = new Dictionary<Type, Type>()
+{
+    {typeof(IPriceParser), typeof(PriceParser)}
+};
+
 using var host = Host.CreateDefaultBuilder(args)
     .UseDefaultServiceProvider((context, options) => {
         options.ValidateScopes = true;
     })
     .ConfigureServices((context, services) =>
     {
-        services.AddTransient<Configuration>();
+        services.AddSingleton<Configuration>();
 
-        services.AddTransient<IPriceParser, PriceParser>();
+        foreach (KeyValuePair<Type, Type> entry in TransientDependencies)
+        {
+            services.AddTransient(entry.Key, entry.Value);
+        }
+        // services.AddTransient<IPriceParser, PriceParser>();
         services.AddTransient<IProductSource, ProductSource>();
 
         services.AddTransient<IProductFormatter, ProductFormatter>();
@@ -37,6 +47,7 @@ using var host = Host.CreateDefaultBuilder(args)
         services.AddScoped<IReferenceAdder, ReferenceAdder>();
         services.AddScoped<IReferenceGenerator, ReferenceGenerator>();
         services.AddSingleton<IIncrementingCounter, IncrementingCounter>();
+        services.AddDbContext<TargetContext>(options => options.UseSqlServer(context.Configuration["TargetContextConnectionString"]));
     })
     .Build();
 
