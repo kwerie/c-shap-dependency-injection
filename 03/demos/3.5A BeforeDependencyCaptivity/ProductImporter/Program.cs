@@ -8,6 +8,10 @@ using ProductImporter.Transformation.Transformations;
 using ProductImporter.Util;
 
 using var host = Host.CreateDefaultBuilder(args)
+    .UseDefaultServiceProvider((context, options) =>
+    {
+        options.ValidateScopes = true;
+    })
     .ConfigureServices((context, services) =>
     {
         services.AddTransient<Configuration>();
@@ -28,7 +32,9 @@ using var host = Host.CreateDefaultBuilder(args)
         services.AddScoped<INameDecapitaliser, NameDecapitaliser>();
         services.AddScoped<ICurrencyNormalizer, CurrencyNormalizer>();
 
-        // add new lifetimes here
+        services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+        services.AddScoped<IReferenceAdder, ReferenceAdder>();
+        services.AddSingleton<IReferenceGenerator, ReferenceGenerator>();
     })
     .Build();
 
